@@ -13,8 +13,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    env:
-      CONFIG_PATH: config/test.yaml
     services:
       postgres:
         image: postgres:10.8
@@ -38,12 +36,19 @@ jobs:
         pip install flake8 pytest
         pip install -r requirements.txt
     - name: Lint with flake8
+      # TODO change to black?
       run: |
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
+      env:
+        CONFIG_PATH: config/test.yaml
       run: |
         alembic upgrade head
         pytest
+    - name: Heroku login
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      run: heroku container:login

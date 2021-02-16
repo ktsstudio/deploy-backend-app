@@ -1,0 +1,7 @@
+.git
+.github
+htmlcov
+.coverage
+.gitignore
+pyproject.toml
+venv

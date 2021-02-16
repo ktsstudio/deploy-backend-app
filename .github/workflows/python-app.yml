@@ -48,7 +48,10 @@ jobs:
       run: |
         alembic upgrade head
         pytest
-    - name: Heroku login
+    - name: Heroku deploy
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-      run: heroku container:login
+      run: |
+        heroku container:login
+        heroku container:push -a deploy-backend-app web
+        heroku container:release -a deploy-backend-app web

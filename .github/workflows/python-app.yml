@@ -51,6 +51,7 @@ jobs:
     - name: Heroku deploy
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      # TODO version
       run: |
         heroku container:login
         heroku container:push -a deploy-backend-app web

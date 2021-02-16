@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: $PORT
 database:
   host: $DATABASE_HOST
   port: $DATABASE_PORT

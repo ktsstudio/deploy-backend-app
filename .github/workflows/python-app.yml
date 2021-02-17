@@ -35,13 +35,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest
         pip install -r requirements.txt
-    - name: Lint with flake8
-      # TODO change to black?
+    - name: Code style
       run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        black --check --diff .
     - name: Test with pytest
       env:
         CONFIG_PATH: config/test.yaml
@@ -51,10 +47,8 @@ jobs:
     - name: Heroku deploy
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-      # TODO version
       run: |
         heroku container:login
-        heroku container:push -a deploy-backend-app web
-        heroku container:push -a deploy-backend-app worker
-        heroku container:release -a deploy-backend-app web
-        heroku container:release -a deploy-backend-app worker
+        heroku container:push -a deploy-backend-app web --arg PROCESS_TYPE=web
+        heroku container:push -a deploy-backend-app worker --arg PROCESS_TYPE=worker
+        heroku container:release -a deploy-backend-app web worker

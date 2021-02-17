@@ -14,21 +14,21 @@ class MessageWorker:
 
     async def handle_message(self, msg: Message):
         try:
-            await routes[msg.__class__](msg, self.store).handle()
+            await routes[msg.type](msg, self.store).handle()
         except Exception as e:
             logger.exception(str(e))
 
     async def run(self):
         await self.store.connect()
+        await self.store.queue.consume(self.handle_message)
         logger.info("START CONSUME QUEUE")
-        try:
-            await self.store.queue.consume(self.handle_message)
-        except asyncio.CancelledError:
-            logger.info("STOP CONSUME QUEUE")
 
 
 def run_worker():
     loop = asyncio.get_event_loop()
     worker = MessageWorker()
     loop.create_task(worker.run())
-    loop.run_forever()
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        print("EXIT")

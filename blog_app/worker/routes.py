@@ -1,4 +1,4 @@
-from blog_app.store.accessors.queue.messages import CreatePostMessage
+from blog_app.store.accessors.queue.messages import MessageType
 from blog_app.worker.handlers import CreatePostHandler
 
-routes = {CreatePostMessage: CreatePostHandler}
+routes = {MessageType.create_post: CreatePostHandler}

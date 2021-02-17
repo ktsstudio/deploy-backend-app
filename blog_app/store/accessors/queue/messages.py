@@ -1,6 +1,7 @@
 import json
 from dataclasses import dataclass, asdict
 from enum import Enum, auto
+from typing import ClassVar
 
 from aio_pika import Message as AioPikaMessage
 
@@ -14,17 +15,19 @@ class MessageType(str, Enum):
 
 @dataclass
 class Message:
+    type: ClassVar[MessageType]
+
     def to_payload(self) -> AioPikaMessage:
         data = asdict(self)
-        data["type"] = TYPE_BY_MESSAGE[self.__class__]
+        data["type"] = self.type
         return AioPikaMessage(json.dumps(data).encode())
 
 
 @dataclass
 class CreatePostMessage(Message):
+    type = MessageType.create_post
     user_id: int
     text: str
 
 
 MESSAGE_MAP = {MessageType.create_post: CreatePostMessage}
-TYPE_BY_MESSAGE = {cls: type for type, cls in MESSAGE_MAP.items()}

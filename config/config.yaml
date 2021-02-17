@@ -6,3 +6,6 @@ database:
   username: postgres
   password: password
   name: blog_app
+queue:
+  enabled: true
+  url: amqp://guest:guest@localhost/

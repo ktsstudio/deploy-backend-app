@@ -11,4 +11,5 @@ def setup_routes(app: web.Application) -> None:
     app.router.add_view("/user.external", user_views.ExternalView)
 
     app.router.add_view("/post.create", post_views.CreatePostView)
+    app.router.add_view("/post.create_from_queue", post_views.CreatePostFromQueueView)
     app.router.add_view("/post.list", post_views.PostListView)

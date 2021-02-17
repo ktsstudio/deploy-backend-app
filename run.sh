@@ -2,4 +2,4 @@
 cat config/prod_config.yaml | envsubst > config/config.yaml
 
 alembic upgrade head
-python main.py
+python main.py "$1"

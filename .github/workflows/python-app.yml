@@ -55,4 +55,6 @@ jobs:
       run: |
         heroku container:login
         heroku container:push -a deploy-backend-app web
+        heroku container:push -a deploy-backend-app worker
         heroku container:release -a deploy-backend-app web
+        heroku container:release -a deploy-backend-app worker

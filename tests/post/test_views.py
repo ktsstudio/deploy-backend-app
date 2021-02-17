@@ -17,18 +17,29 @@ def post2dict(post: Post):
 
 
 class TestPostListView:
-    @pytest.mark.parametrize("params,expected_idxs", [
-        [{}, [0, 1]],
-        [{"limit": 1}, [0]],
-        [{"offset": 1}, [1]],
-        [{"user_id": 1}, [1]]
-    ])
+    @pytest.mark.parametrize(
+        "params,expected_idxs",
+        [
+            [{}, [1, 0]],
+            [{"limit": 1}, [1]],
+            [{"offset": 1}, [0]],
+            [{"user_id": 1}, [1]],
+        ],
+    )
     async def test_success(
-        self, cli, posts: List[Post], user: User, user2, params: dict, expected_idxs
+        self,
+        cli,
+        posts: List[Post],
+        user: User,
+        user2,
+        params: dict,
+        expected_idxs,
     ):
         users = [user, user2]
         if "user_id" in params:
             params["user_id"] = users[params["user_id"]].id
         response = await cli.get("/post.list", params=params)
         assert response.status == 200
-        assert await response.json() == [post2dict(posts[idx]) for idx in expected_idxs]
+        assert await response.json() == [
+            post2dict(posts[idx]) for idx in expected_idxs
+        ]

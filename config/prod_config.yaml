@@ -6,3 +6,6 @@ database:
   username: $DATABASE_USER
   password: $DATABASE_PASSWORD
   name: $DATABASE_NAME
+queue:
+  enabled: true
+  url: $QUEUE_URL

@@ -11,7 +11,9 @@ def create_app():
         middlewares=[error_middleware, auth_middleware, validation_middleware]
     )
     setup_routes(app)
-    app["store"] = Store(app)
+    app["store"] = Store()
+    app.on_startup.append(app["store"].connect)
+    app.on_shutdown.append(app["store"].disconnect)
     setup_aiohttp_apispec(
         app=app,
         title="My Documentation",

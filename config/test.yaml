@@ -6,3 +6,5 @@ database:
   username: postgres
   password: password
   name: test_blog_app
+queue:
+  enabled: false

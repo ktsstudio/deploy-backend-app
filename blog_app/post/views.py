@@ -11,11 +11,13 @@ from sqlalchemy import and_
 
 from blog_app.post.models import Post
 from blog_app.post.schemas import CreatePostSchema, PostSchema, PostListSchema
+from blog_app.store.accessors.queue.messages import CreatePostMessage
 from blog_app.user.models import User
+from blog_app.web.base import BaseView
 from blog_app.web.decorators import require_auth
 
 
-class CreatePostView(web.View):
+class CreatePostView(BaseView):
     @docs(tags=["post"], summary="Create post")
     @json_schema(CreatePostSchema)
     @response_schema(PostSchema)
@@ -29,7 +31,20 @@ class CreatePostView(web.View):
         return web.json_response(PostSchema().dump(post))
 
 
-class PostListView(web.View):
+class CreatePostFromQueueView(BaseView):
+    @docs(tags=["post"], summary="Create post")
+    @json_schema(CreatePostSchema)
+    @require_auth
+    async def post(self):
+        await self.store.queue.publish(
+            CreatePostMessage(
+                self.request["user_id"], self.request["json"]["text"]
+            )
+        )
+        return web.json_response()
+
+
+class PostListView(BaseView):
     @docs(tags=["post"], summary="Post list")
     @querystring_schema(PostListSchema)
     @response_schema(PostSchema(many=True))
@@ -42,7 +57,7 @@ class PostListView(web.View):
         posts = (
             await Post.load(user=User.on(Post.user_id == User.id))
             .query.where(and_(*conditions))
-            .order_by(Post.id)
+            .order_by(Post.id.desc())
             .limit(data["limit"])
             .offset(data["offset"])
             .gino.all()

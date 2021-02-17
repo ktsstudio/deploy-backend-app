@@ -1,6 +1,5 @@
 import datetime
 from hashlib import md5
-from uuid import uuid4
 
 import aiohttp
 from aiohttp import web
@@ -9,12 +8,14 @@ from aiohttp_apispec import docs, json_schema, response_schema
 from asyncpg import UniqueViolationError
 from sqlalchemy import and_
 
+from blog_app.store.accessors.queue.messages import CreatePostMessage
 from blog_app.user.models import User, Session
 from blog_app.user.schemas import RegisterSchema, LoginSchema, UserSchema
+from blog_app.web.base import BaseView
 from blog_app.web.decorators import require_auth
 
 
-class RegisterView(web.View):
+class RegisterView(BaseView):
     @docs(tags=["user"], summary="User registration")
     @json_schema(RegisterSchema)
     @response_schema(RegisterSchema)
@@ -33,7 +34,7 @@ class RegisterView(web.View):
         return web.json_response(UserSchema().dump(user))
 
 
-class LoginView(web.View):
+class LoginView(BaseView):
     @docs(tags=["user"], summary="User login")
     @json_schema(RegisterSchema)
     @response_schema(LoginSchema)
@@ -52,7 +53,7 @@ class LoginView(web.View):
         raise HTTPBadRequest(reason="invalid_credentials")
 
 
-class MeView(web.View):
+class MeView(BaseView):
     @docs(tags=["user"], summary="Information about current user")
     @response_schema(UserSchema)
     @require_auth
@@ -61,7 +62,7 @@ class MeView(web.View):
         return web.json_response(UserSchema().dump(user))
 
 
-class ExternalView(web.View):
+class ExternalView(BaseView):
     @docs(tags=["user"], summary="View with external requests")
     async def get(self):
         async with aiohttp.ClientSession() as session:

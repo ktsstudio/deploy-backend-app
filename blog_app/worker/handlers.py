@@ -25,5 +25,3 @@ class CreatePostHandler(BaseHandler):
             created=now(),
             text=f"Created by queue: {self.message.text}",
         )
-
-# API ---> rabbit <--> worker --> в pg создает сообщение
